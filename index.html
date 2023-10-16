@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="app.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <header id="texto">
+      APP AYUDA DEBILES VISUALES
+    </header>
+    <header id="texto2">
+    </header>
+    <section class="cam-container">
+      <div class="video-wrap">
+        <video class="video"></video>
+      </div>
+      <div class="canvas-wrap">
+        <canvas class="canvas" width="420" height="340">
+          <img
+            src=""
+            class="photo"
+            alt="photo"
+          />
+        </canvas>
+      </div>
+      <div>
+        <audio id="camara_lect">
+          <source src="camara_lect.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="audioshot">
+          <source src="shot_camera.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="audiofinal">
+          <source src="pip_final.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="myAudio">
+          <source src="pip.mp3" type="audio/mpeg">
+        </audio>
+        <button class="speak-btn">Hablar</button>
+        <br>
+        <button class="start-btn">TOMAR FOTO</button>
+        <br>
+        <button class="read-btn">LECTURA</button>
+        <br>
+        <button class="ask-btn">PREGUNT</button>
+      </div>
+    </section>
+  </body>
+</html>
