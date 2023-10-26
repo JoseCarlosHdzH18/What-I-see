@@ -9,6 +9,7 @@ const canvas = document.querySelector(".canvas");
 const audio = document.getElementById("myAudio");
 const audiofinal = document.getElementById("audiofinal");
 const audioshot = document.getElementById("audioshot");
+const audioerror = document.getElementById("audioerror");
 const camara_lect = document.getElementById("camara_lect");
 
 //speak foto
@@ -22,6 +23,9 @@ const ask = document.querySelector(".ask-btn");
 
 //tomar foto
 const button = document.querySelector(".start-btn");
+
+//silenciar
+const silneciar = document.getElementById("silenciar");
 
 //mostrar foto
 const photo = document.querySelector(".photo");
@@ -38,18 +42,63 @@ const constraints = {
 };
 
 
+// Función para enumerar y listar las cámaras disponibles
+async function listAvailableCameras() {
+  const devices = await navigator.mediaDevices.enumerateDevices();
+
+  // Limpiar la lista actual de opciones
+  cameraSelect.innerHTML = '';
+
+  // Agregar una opción por cada cámara encontrada
+  devices.forEach(device => {
+    if (device.kind === 'videoinput') {
+      const option = document.createElement('option');
+      option.value = device.deviceId;
+      option.text = device.label || `Cámara ${cameraSelect.options.length + 1}`;
+      cameraSelect.appendChild(option);
+    }
+  });
+
+  // Asignar un evento al select para actualizar la cámara al cambiar la selección
+  cameraSelect.addEventListener('change', () => {
+    getVideo(); // Llama a la función getVideo cuando cambia la selección
+  });
+}
+
+// Llama a la función para listar las cámaras disponibles al cargar la página
+listAvailableCameras();
+
 //acceso a la webcam
 /*
 Aquí recibimos la respuesta del navegador, es una promesa
  */
+// Obtén la referencia al elemento select
+const cameraSelect = document.getElementById('cameraSelect');
+
 const getVideo = async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    handleSucces(stream);
-    // console.log(stream);
+    handleSuccess(stream);
   } catch (error) {
     console.log(error);
   }
+};
+
+// Controlador para el evento loadedmetadata
+const handleSuccess = (stream) => {
+  video.srcObject = stream;
+  video.onloadedmetadata = () => {
+    video.play();
+    // Ahora puedes realizar el dibujo en el canvas
+    drawVideoOnCanvas();
+  };
+};
+
+// Función para dibujar el video en el canvas
+const drawVideoOnCanvas = () => {
+  const context = canvas.getContext('2d');
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  // Resto del código para procesar la imagen
 };
 
 //3. -----------> si la promesa tiene exito
@@ -105,6 +154,12 @@ speak_button.addEventListener("click", () => {
 
 });
 
+//. ----------> Silenciar
+silneciar.addEventListener("click", () => {
+  audioerror.play();
+  window.speechSynthesis.cancel();
+});
+
 //6. ----------> Preguntar a CHATGPT jaja
 ask.addEventListener("click", () => {
   printAsyncResult();
@@ -135,8 +190,8 @@ function eliminarRepetidos(array) {
 
 // Mandar a la API de Google para lectura de Texto
 async function read_text(dataImage){
-  const url = 'https://vision.googleapis.com/v1/files:annotate?key=AIzaSyB2v2LwxXOHuZYBmhlRhsyKg-y6XbVHius';
-  const url2= 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyB2v2LwxXOHuZYBmhlRhsyKg-y6XbVHius';
+  const url = 'https://vision.googleapis.com/v1/files:annotate?key=AIzaSyBJYN0U8fBREXSgsJFDseJ57mcRgRwhMFc';
+  const url2= 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBJYN0U8fBREXSgsJFDseJ57mcRgRwhMFc';
   
   const response = await fetch(url2, {
       method: 'POST',
@@ -178,7 +233,7 @@ async function read_text(dataImage){
 
 // Mandar a la API de Google
 async function SEND_IMG_GOOGLE_API(dataImage){
-  const url2= 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyB2v2LwxXOHuZYBmhlRhsyKg-y6XbVHius';
+  const url2= 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBJYN0U8fBREXSgsJFDseJ57mcRgRwhMFc';
   
   const response = await fetch(url2, {
       method: 'POST',
@@ -193,11 +248,43 @@ async function SEND_IMG_GOOGLE_API(dataImage){
                       "content": dataImage
                   },
                   "features":[
-                      {
-                          "maxResults": 50,
-                          "model": "builtin/latest",
-                          "type": "OBJECT_LOCALIZATION"
-                      },
+                    {
+                      "maxResults": 50,
+                      "type": "LANDMARK_DETECTION"
+                    },
+                    {
+                      "maxResults": 50,
+                      "type": "FACE_DETECTION"
+                    },
+                    {
+                      "maxResults": 50,
+                      "type": "OBJECT_LOCALIZATION"
+                    },
+                    {
+                      "maxResults": 50,
+                      "type": "LOGO_DETECTION"
+                    },
+                    {
+                      "maxResults": 50,
+                      "type": "LABEL_DETECTION"
+                    },
+                    {
+                      "maxResults": 50,
+                      "model": "builtin/latest",
+                      "type": "DOCUMENT_TEXT_DETECTION"
+                    },
+                    {
+                      "maxResults": 50,
+                      "type": "SAFE_SEARCH_DETECTION"
+                    },
+                    {
+                      "maxResults": 50,
+                      "type": "IMAGE_PROPERTIES"
+                    },
+                    {
+                      "maxResults": 50,
+                      "type": "CROP_HINTS"
+                    }
                   ]
               }
           ]
@@ -265,14 +352,16 @@ async function ask_openai() {
 }
 
 const get_just_objects = (res) => {
-  const annotations = res.responses[0].localizedObjectAnnotations;
+  console.log(res)
+  
+  const annotations = res.responses[0].labelAnnotations;
   let objs = []
   // Iterate through the array and extract the "name" property of each object
   for (const annotation of annotations) {
-      const name = annotation.name;
+      const name = annotation.description;
       objs.push(name);
   }
-  objs = eliminarRepetidos(objs);
+  // objs = eliminarRepetidos(objs);
   return objs;
 }
 

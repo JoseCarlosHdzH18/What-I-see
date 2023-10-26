@@ -17,7 +17,11 @@
     </header>
     <section class="cam-container">
       <div class="video-wrap">
-        <video class="video"></video>
+        <label for="cameraSelect">Selecciona una cámara:</label>
+        <select id="cameraSelect"></select>
+        <button id="silenciar" class="padding">Silenciar</button>
+        <br>
+        <video class="video" width="210" height="170"></video>
       </div>
       <div class="canvas-wrap">
         <canvas class="canvas" width="420" height="340">
@@ -32,6 +36,9 @@
         <audio id="camara_lect">
           <source src="camara_lect.mp3" type="audio/mpeg">
         </audio>
+        <audio id="audioerror">
+          <source src="error.mp3" type="audio/mpeg">
+        </audio>
         <audio id="audioshot">
           <source src="shot_camera.mp3" type="audio/mpeg">
         </audio>
@@ -41,13 +48,13 @@
         <audio id="myAudio">
           <source src="pip.mp3" type="audio/mpeg">
         </audio>
-        <button class="speak-btn">Hablar</button>
+        <button class="padding speak-btn">Hablar</button>
         <br>
-        <button class="start-btn">TOMAR FOTO</button>
+        <button class="padding start-btn">TOMAR FOTO</button>
         <br>
-        <button class="read-btn">LECTURA</button>
+        <button class="padding read-btn">LECTURA</button>
         <br>
-        <button class="ask-btn">PREGUNT</button>
+        <button class="padding ask-btn">PREGUNTAR</button>
       </div>
     </section>
   </body>

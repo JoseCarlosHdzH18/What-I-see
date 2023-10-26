@@ -28,7 +28,7 @@ app.get('/chatgpt', (req, res) => {
     openai.chat.completions.create({ 
         model: "gpt-3.5-turbo",
         messages: [
-            { role: "user", content: "Hola, " + req.query.instruction + "[" + req.query.objects + "]"}
+            { role: "user", content: "concretamente y en muy resumidas palabras, " + req.query.instruction + "[" + req.query.objects + "]"}
         ]
     }).then(text_res => {
         // console.log(res)
